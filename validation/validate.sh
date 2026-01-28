@@ -79,7 +79,7 @@ validate_prerequisites() {
     
     # Verificar Docker Compose
     print_test "Verificando Docker Compose..."
-    if command -v docker-compose &> /dev/null || docker compose version &> /dev/null; then
+    if command -v docker compose &> /dev/null || docker compose version &> /dev/null; then
         print_success "Docker Compose está disponible"
     else
         print_error "Docker Compose no está disponible"
@@ -92,7 +92,7 @@ validate_prerequisites() {
         print_success "Contenedor PostgreSQL está corriendo"
     else
         print_error "Contenedor PostgreSQL no está corriendo"
-        print_info "Ejecuta: docker-compose up -d"
+        print_info "Ejecuta: docker compose up -d"
         exit 1
     fi
     
@@ -101,7 +101,7 @@ validate_prerequisites() {
         print_success "Contenedor MySQL está corriendo"
     else
         print_error "Contenedor MySQL no está corriendo"
-        print_info "Ejecuta: docker-compose up -d"
+        print_info "Ejecuta: docker compose up -d"
         exit 1
     fi
 }

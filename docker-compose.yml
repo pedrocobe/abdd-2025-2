@@ -63,7 +63,8 @@ services:
     ports:
       - "31415:31415"
     volumes:
-      - ./symmetricds/america:/opt/symmetric-ds/engines/america:rw
+      - ./symmetricds/america/america.properties.main:/opt/symmetric-ds/engines/america.properties:ro
+      - ./symmetricds/america/engines:/opt/symmetric-ds/engines/america:rw
     depends_on:
       postgres-america:
         condition: service_healthy
@@ -82,7 +83,8 @@ services:
     ports:
       - "31416:31416"
     volumes:
-      - ./symmetricds/europe:/opt/symmetric-ds/engines/europe:rw
+      - ./symmetricds/europe/europe.properties.main:/opt/symmetric-ds/engines/europe.properties:ro
+      - ./symmetricds/europe/engines:/opt/symmetric-ds/engines/europe:rw
     depends_on:
       mysql-europe:
         condition: service_healthy
