@@ -55,7 +55,7 @@ services:
   # SymmetricDS Nodo América (PostgreSQL)
   # ============================================
   symmetricds-america:
-    image: jumpmind/symmetricds:3.14
+    image: jumpmind/symmetricds:3.16
     container_name: symmetricds-america
     hostname: symmetricds-america
     environment:
@@ -74,7 +74,7 @@ services:
   # SymmetricDS Nodo Europa (MySQL)
   # ============================================
   symmetricds-europe:
-    image: jumpmind/symmetricds:3.14
+    image: jumpmind/symmetricds:3.16
     container_name: symmetricds-europe
     hostname: symmetricds-europe
     environment:
