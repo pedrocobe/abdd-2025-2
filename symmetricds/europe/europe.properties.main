@@ -39,8 +39,8 @@ registration.url=http://symmetricds-america:31415/sync/america
 # --------------------------------------------
 # Configuración de Sincronización
 # --------------------------------------------
-# URL de sincronización (usualmente igual que registration.url)
-sync.url=
+# URL de sincronización (este nodo)
+sync.url=http://symmetricds-europe:31416/sync/europe
 
 # Intervalo de push/pull (en milisegundos)
 # Debe coincidir con la configuración del nodo América

@@ -39,8 +39,8 @@ registration.url=
 # --------------------------------------------
 # Configuración de Sincronización
 # --------------------------------------------
-# Modo de sincronización inicial
-sync.url=
+# URL de sincronización (este nodo)
+sync.url=http://symmetricds-america:31415/sync/america
 
 # Intervalo de push/pull (en milisegundos)
 # Controla con qué frecuencia se envían/reciben cambios
