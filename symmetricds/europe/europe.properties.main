@@ -1,16 +1,16 @@
 # ============================================
-# SymmetricDS Node Configuration - AMÉRICA
+# SymmetricDS Node Configuration - EUROPA
 # ============================================
 # 
 # INSTRUCCIONES PARA EL ESTUDIANTE:
-# Este archivo debe ser configurado para conectar el nodo América
-# con la base de datos PostgreSQL y establecer la replicación bidireccional
-# con el nodo Europa.
+# Este archivo debe ser configurado para conectar el nodo Europa
+# con la base de datos MySQL y registrarse contra el nodo América
+# para establecer la replicación bidireccional.
 #
 # TAREAS:
-# 1. Configurar la conexión a PostgreSQL (db.*)
+# 1. Configurar la conexión a MySQL (db.*)
 # 2. Definir el group.id y external.id del nodo
-# 3. Configurar el modo de registro (registration.url)
+# 3. Configurar el modo de registro contra América (registration.url)
 # 4. Habilitar servicios necesarios
 #
 # ============================================
@@ -18,43 +18,45 @@
 # --------------------------------------------
 # Identificación del Nodo
 # --------------------------------------------
-# COMPLETAR: Define el grupo de este nodo (ej: america-store, region-america)
-engine.name=
-group.id=
-external.id=
+# COMPLETAR: Define el grupo de este nodo (ej: europe-store, region-europe)
+# IMPORTANTE: El group.id debe coincidir con el definido en el nodo América
+engine.name=europe
+group.id=europe-store
+external.id=002
 
 # --------------------------------------------
-# Conexión a la Base de Datos PostgreSQL
+# Conexión a la Base de Datos MySQL
 # --------------------------------------------
-# COMPLETAR: Configuración de conexión a PostgreSQL
-# Host: postgres-america (nombre del servicio en docker-compose)
-# Puerto: 5432
+# COMPLETAR: Configuración de conexión a MySQL
+# Host: mysql-europe (nombre del servicio en docker-compose)
+# Puerto: 3306
 # Base de datos: globalshop
 # Usuario: symmetricds
 # Password: symmetricds
 
-db.driver=
-db.url=
-db.user=
-db.password=
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://mysql-europe:3306/globalshop?allowPublicKeyRetrieval=true&useSSL=false
+db.user=symmetricds
+db.password=symmetricds
 
 # --------------------------------------------
 # Modo de Registro
 # --------------------------------------------
 # COMPLETAR: URL de registro
-# Este nodo actuará como nodo RAÍZ (root/master)
-# registration.url debe estar vacío o apuntar a sí mismo
+# Este nodo debe REGISTRARSE contra el nodo América
+# Format: http://[host]:[port]/sync/[engine-name]
+# Ejemplo: http://symmetricds-america:31415/sync/america
 
-registration.url=
+registration.url=http://symmetricds-america:31415/sync/america
 
 # --------------------------------------------
 # Configuración de Sincronización
 # --------------------------------------------
-# Modo de sincronización inicial
-sync.url=
+# URL de sincronización (usualmente igual que registration.url)
+sync.url=http://symmetricds-europe:31416/sync/europe
 
 # Intervalo de push/pull (en milisegundos)
-# Controla con qué frecuencia se envían/reciben cambios
+# Debe coincidir con la configuración del nodo América
 job.push.period.time.ms=5000
 job.pull.period.time.ms=5000
 job.routing.period.time.ms=5000
@@ -77,9 +79,9 @@ auto.upgrade=true
 # Configuración HTTP/REST API
 # --------------------------------------------
 # Puerto para el servicio HTTP de SymmetricDS
-# COMPLETAR: Puerto (ej: 31415)
+# COMPLETAR: Puerto (ej: 31416) - DEBE SER DIFERENTE al nodo América
 http.enable=true
-http.port=
+http.port=31416
 
 # Tiempo de espera
 http.timeout.ms=90000
@@ -96,8 +98,8 @@ log.conflict.resolution=true
 # --------------------------------------------
 # Configuración de Transformación de Datos
 # --------------------------------------------
-# SymmetricDS manejará diferencias entre PostgreSQL y MySQL
-# automáticamente, pero podemos especificar comportamientos
+# Manejo de diferencias entre tipos de datos PostgreSQL y MySQL
+# SymmetricDS manejará automáticamente la mayoría de conversiones
 
 # Manejo de conflictos (last_write_wins, manual, ignore)
 conflict.resolver=last_write_wins
@@ -111,12 +113,22 @@ transport.max.bytes.to.sync=1048576
 # Timeout de conexión
 transport.timeout.ms=300000
 
+# Reintentos de registro
+registration.number.of.attempts=10
+
+# --------------------------------------------
+# Conversión de Tipos MySQL
+# --------------------------------------------
+# MySQL usa TINYINT para BOOLEAN
+# SymmetricDS manejará esto automáticamente
+
 # ============================================
 # NOTAS IMPORTANTES:
 # 
-# 1. Este nodo (América) debe ser configurado primero
-# 2. El nodo Europa se registrará contra este nodo
-# 3. No olvides completar TODOS los campos marcados con COMPLETAR
-# 4. Los valores deben coincidir con tu docker-compose.yml
+# 1. Este nodo (Europa) debe registrarse DESPUÉS del nodo América
+# 2. El registration.url debe apuntar al nodo América
+# 3. El group.id debe coincidir con el definido en américa.properties
+# 4. El puerto HTTP debe ser diferente (31416 vs 31415)
+# 5. No olvides completar TODOS los campos marcados con COMPLETAR
 # 
 # ============================================
