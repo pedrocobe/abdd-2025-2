@@ -1,0 +1,12 @@
+-- ============================================
+-- SymmetricDS Engine Configuration - EUROPA
+-- ============================================
+--
+-- NOTA: La configuración se propaga automáticamente desde América
+-- Este archivo puede estar vacío para una configuración multi-master bidireccional
+--
+-- En caso de necesitar configuración específica para Europa,
+-- se agregará aquí.
+--
+
+-- Configuración mínima: El nodo Europa hereda todo de América
