@@ -46,3 +46,10 @@ Thumbs.db
 volumes/
 postgres-data/
 mysql-data/
+mysql_data/
+globalshop/
+init-db/
+
+# Archivos específicos problemáticos
+*.sock
+*.dblwr
