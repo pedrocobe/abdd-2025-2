@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres-america:
+    image: postgres:15
+    container_name: postgres-america
+    environment:
+      POSTGRES_DB: globalshop
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U symmetricds -d globalshop -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db/postgres:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - globalshop-network
+
+  mysql-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    command: --log-bin-trust-function-creators=1
+    environment:
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+      MYSQL_ROOT_PASSWORD: rootpassword
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init-db/mysql:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    networks:
+      - globalshop-network
+
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-america
+    environment:
+      - SYMMETRIC_HOME=/opt/symmetric-ds
+    ports:
+      - "31415:31415"
+    volumes:
+      - ./symmetricds/america:/opt/symmetric-ds/engines/america
+      - ./symmetricds/america/symmetric.properties:/opt/symmetric-ds/engines/america.properties
+      - ./symmetricds/america/engines/america-setup.sql:/opt/symmetric-ds/engines/america-setup.sql
+    depends_on:
+      - postgres-america
+    networks:
+      - globalshop-network
+
+  symmetricds-europe:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-europe
+    environment:
+      - SYMMETRIC_HOME=/opt/symmetric-ds
+    ports:
+      - "31416:31416"
+    volumes:
+      - ./symmetricds/europe:/opt/symmetric-ds/engines/europe
+      - ./symmetricds/europe/symmetric.properties:/opt/symmetric-ds/engines/europe.properties
+      - ./symmetricds/europe/symmetric-server.properties:/opt/symmetric-ds/conf/symmetric-server.properties
+      - ./symmetricds/europe/engines/europe-setup.sql:/opt/symmetric-ds/engines/europe-setup.sql
+    depends_on:
+      - mysql-europe
+      - symmetricds-america
+    networks:
+      - globalshop-network
+
+networks:
+  globalshop-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  mysql-data:
