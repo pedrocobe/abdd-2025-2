@@ -1,0 +1,99 @@
+version: '3.8'
+services:
+  postgres-america:
+    image: postgres:15
+    container_name: postgres-america
+    hostname: postgres-america
+    environment:
+      POSTGRES_DB: globalshop
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+    ports:
+    - 5432:5432
+    volumes:
+    - ./init-db/postgres:/docker-entrypoint-initdb.d:ro
+    - postgres-data:/var/lib/postgresql/data
+    networks:
+    - globalshop-network
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U symmetricds -d globalshop
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mysql-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    hostname: mysql-europe
+    environment:
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+    - 3306:3306
+    volumes:
+    - ./init-db/mysql:/docker-entrypoint-initdb.d:ro
+    - mysql-data:/var/lib/mysql
+    networks:
+    - globalshop-network
+    healthcheck:
+      test:
+      - CMD
+      - mysqladmin
+      - ping
+      - -h
+      - localhost
+      - -u
+      - symmetricds
+      - -psymmetricds
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --default-authentication-plugin=mysql_native_password --log-bin-trust-function-creators=1
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-america
+    hostname: symmetricds-america
+    environment:
+    - SYMMETRIC_HOME=/opt/symmetric-ds
+    restart: unless-stopped
+    ports:
+    - 31415:31415
+    volumes:
+    - ./symmetricds/america/america.properties.main:/opt/symmetric-ds/engines/america.properties:ro
+    - ./symmetricds/america/symmetric.properties:/opt/symmetric-ds/conf/symmetric.properties:ro
+    - ./symmetricds/america/engines:/opt/symmetric-ds/engines/america:rw
+    depends_on:
+      postgres-america:
+        condition: service_healthy
+    networks:
+    - globalshop-network
+  symmetricds-europe:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-europe
+    hostname: symmetricds-europe
+    environment:
+    - SYMMETRIC_HOME=/opt/symmetric-ds
+    restart: unless-stopped
+    ports:
+    - 31416:31416
+    volumes:
+    - ./symmetricds/europe/europe.properties.main:/opt/symmetric-ds/engines/europe.properties:ro
+    - ./symmetricds/europe/symmetric.properties:/opt/symmetric-ds/conf/symmetric.properties:ro
+    - ./symmetricds/europe/engines:/opt/symmetric-ds/engines/europe:rw
+    depends_on:
+      mysql-europe:
+        condition: service_healthy
+      symmetricds-america:
+        condition: service_started
+    networks:
+    - globalshop-network
+networks:
+  globalshop-network:
+    driver: bridge
+    name: globalshop-network
+volumes:
+  postgres-data: null
+  mysql-data: null
