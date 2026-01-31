@@ -1,0 +1,13 @@
+-- ============================================
+-- SymmetricDS Configuration - EUROPA (CLIENT NODE)
+-- ============================================
+-- Este archivo puede estar vacío para el nodo cliente.
+-- La configuración principal se define en el nodo ROOT (América).
+-- 
+-- El nodo Europa se registrará automáticamente contra América
+-- y recibirá la configuración de replicación del nodo ROOT.
+-- ============================================
+
+-- No se requiere configuración adicional para el nodo cliente.
+-- SymmetricDS sincronizará automáticamente la configuración
+-- desde el nodo ROOT (América) durante el proceso de registro.

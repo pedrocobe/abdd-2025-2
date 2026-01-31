@@ -2,6 +2,13 @@
 -- GlobalShop - MySQL Database (Europa)
 -- ============================================
 
+-- ============================================
+-- PERMISOS PARA SYMMETRICDS (EJECUTAR PRIMERO)
+-- ============================================
+GRANT ALL PRIVILEGES ON *.* TO 'symmetricds'@'%' WITH GRANT OPTION;
+GRANT PROCESS ON *.* TO 'symmetricds'@'%';
+FLUSH PRIVILEGES;
+
 -- Configurar timezone y charset
 SET time_zone = '+00:00';
 SET NAMES utf8mb4;
