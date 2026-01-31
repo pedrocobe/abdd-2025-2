@@ -1,0 +1,48 @@
+# ============================================
+# .gitignore - Archivos a ignorar en Git
+# ============================================
+
+# Docker Compose file (los estudiantes deben crearlo)
+docker-compose.yml
+
+# ============================================
+# ARCHIVOS SOLO PARA PROFESOR (NO SUBIR A MAIN)
+# ============================================
+calificar_todos.sh
+calificar.sh
+calificar_estudiante.sh
+INSTRUCCIONES_PROFESOR.md
+RESUMEN_*.md
+RESUMEN_*.txt
+FLUJO_GIT.md
+validation/
+
+# Resultados de calificación
+resultados*/
+*.log
+calificacion_*.txt
+calificaciones.json
+calificaciones.csv
+
+# ============================================
+# ARCHIVOS TEMPORALES Y SISTEMA
+# ============================================
+*.tmp
+*.temp
+tmp/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Datos de volúmenes Docker
+*-data/
+volumes/
+postgres-data/
+mysql-data/
