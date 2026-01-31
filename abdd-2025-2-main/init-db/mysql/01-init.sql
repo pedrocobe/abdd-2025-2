@@ -147,3 +147,11 @@ SELECT
     'Database is ready for SymmetricDS replication' AS '';
 SELECT 
     '=================================================' AS '';
+
+-- ============================================
+-- Conceder privilegios necesarios a SymmetricDS
+-- ============================================
+GRANT ALL PRIVILEGES ON globalshop.* TO 'symmetricds'@'%';
+GRANT PROCESS ON *.* TO 'symmetricds'@'%';
+GRANT SUPER ON *.* TO 'symmetricds'@'%';
+FLUSH PRIVILEGES;
