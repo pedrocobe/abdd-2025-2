@@ -7,7 +7,47 @@
 
 ---
 
-## 📋 Descripción del Problema
+## � Quick Start (Inicio Rápido)
+
+Para ejecutar el proyecto completo con replicación bidireccional funcionando:
+
+```bash
+# 1. Clonar y entrar al directorio
+cd abdd-2025-2
+
+# 2. Iniciar todos los contenedores
+docker-compose up -d
+
+# 3. Esperar 2-3 minutos a que todo se configure automáticamente
+# El configurador ejecutará el SQL necesario para SymmetricDS
+
+# 4. Verificar que todo está corriendo
+docker ps
+
+# 5. Probar la replicación (PowerShell)
+.\test-replication.ps1
+```
+
+### Arquitectura Desplegada
+
+```
+┌─────────────────┐                           ┌─────────────────┐
+│   PostgreSQL    │◄─────── SymmetricDS ─────►│     MySQL       │
+│   (América)     │         Bidireccional     │    (Europa)     │
+│   Puerto 5432   │                           │   Puerto 3306   │
+└────────┬────────┘                           └────────┬────────┘
+         │                                             │
+         ▼                                             ▼
+┌─────────────────┐                           ┌─────────────────┐
+│  SymmetricDS    │◄─────── HTTP/Pull ───────►│  SymmetricDS    │
+│  America Node   │                           │  Europe Node    │
+│  Puerto 31415   │                           │  Puerto 31416   │
+└─────────────────┘                           └─────────────────┘
+```
+
+---
+
+## �📋 Descripción del Problema
 
 **GlobalShop Inc.** es una empresa de e-commerce que opera en dos regiones principales:
 - **Región América** (Sede en Miami, USA) - Base de datos PostgreSQL
