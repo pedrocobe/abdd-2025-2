@@ -8,6 +8,14 @@ SET NAMES utf8mb4;
 SET CHARACTER SET utf8mb4;
 
 -- ============================================
+-- Otorgar permisos adicionales al usuario symmetricds
+-- Necesarios para SymmetricDS
+-- ============================================
+GRANT PROCESS ON *.* TO 'symmetricds'@'%';
+GRANT SUPER ON *.* TO 'symmetricds'@'%';
+FLUSH PRIVILEGES;
+
+-- ============================================
 -- Tabla: products (Catálogo de Productos)
 -- ============================================
 CREATE TABLE products (
