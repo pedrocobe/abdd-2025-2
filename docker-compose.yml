@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+  postgres-america:
+    image: postgres:15
+    container_name: postgres-america
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+      POSTGRES_DB: globalshop
+    volumes:
+      - ./init-db/postgres:/docker-entrypoint-initdb.d:ro
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U symmetricds"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+    command: ["--default-authentication-plugin=mysql_native_password","--log-bin-trust-function-creators=1"]
+    volumes:
+      - ./init-db/mysql:/docker-entrypoint-initdb.d:ro
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -u symmetricds -psymmetricds"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-america
+    ports:
+      - "31415:31415"
+    volumes:
+      - ./symmetricds/america:/opt/symmetric-ds/engines
+    depends_on:
+      postgres-america:
+        condition: service_healthy
+    environment:
+      - SYMMETRICDS_ENGINE=america
+
+  symmetricds-europe:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-europe
+    ports:
+      - "31416:31416"
+    volumes:
+      - ./symmetricds/europe:/opt/symmetric-ds/engines
+    depends_on:
+      symmetricds-america:
+        condition: service_started
+      mysql-europe:
+        condition: service_healthy
+    environment:
+      - SYMMETRICDS_ENGINE=europe
+
+volumes:
+  postgres_data: {}
+  mysql_data: {}

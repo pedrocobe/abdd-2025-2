@@ -1,0 +1,2 @@
+-- Europe setup can be empty; configuration will propagarse desde America
+-- Dejar vacío o agregar inserciones específicas si se desea

@@ -1,0 +1,1 @@
+-- Europe setup placeholder (can be empty or include SQL if needed)
