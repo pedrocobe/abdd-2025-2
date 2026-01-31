@@ -1,0 +1,14 @@
+engine.name=america
+group.id=corp
+external.id=001
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://postgres-america:5432/globalshop
+db.user=symmetricds
+db.password=symmetricds
+
+http.port=31415
+sync.url=http://symmetricds-america:31415/sync/america
+registration.url=
+
+auto.config.database=true
+auto.create.ro.tables=true

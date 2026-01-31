@@ -1,0 +1,78 @@
+services:
+  postgres-america:
+    image: postgres:15
+    container_name: postgres-america
+    environment:
+      POSTGRES_DB: globalshop
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./symmetricds/america/engines/america-setup.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U symmetricds -d globalshop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - globalshop-network
+
+  mysql-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    environment:
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./symmetricds/europe/engines/europe-setup.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --log_bin_trust_function_creators=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - globalshop-network
+
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-america
+    ports:
+      - '31415:31415'
+    volumes:
+      - ./symmetricds/america/america.properties.main:/opt/symmetric-ds/engines/america.properties
+    depends_on:
+      postgres-america:
+        condition: service_healthy
+    networks:
+      - globalshop-network
+
+  symmetricds-europe:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-europe
+    ports:
+      - '31416:31416'
+    volumes:
+      - ./symmetricds/europe/europe.properties.main:/opt/symmetric-ds/engines/europe.properties
+    depends_on:
+      mysql-europe:
+        condition: service_healthy
+      symmetricds-america:
+        condition: service_started
+    networks:
+      - globalshop-network
+
+networks:
+  globalshop-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mysql_data:

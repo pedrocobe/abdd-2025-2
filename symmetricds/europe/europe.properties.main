@@ -1,0 +1,15 @@
+engine.name=europe
+group.id=store
+external.id=002
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://mysql-europe:3306/globalshop?useSSL=false&allowPublicKeyRetrieval=true
+db.user=symmetricds
+db.password=symmetricds
+
+http.port=31416
+sync.url=http://symmetricds-europe:31416/sync/europe
+
+registration.url=http://symmetricds-america:31415/sync/america
+
+auto.config.database=true
+auto.create.ro.tables=true
