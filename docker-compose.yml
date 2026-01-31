@@ -1,0 +1,141 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # Base de Datos PostgreSQL (Región América)
+  # ============================================
+  postgres-america:
+    image: postgres:15
+    container_name: postgres-america
+    environment:
+      POSTGRES_DB: globalshop
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db/postgres:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - globalshop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U symmetricds -d globalshop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Base de Datos MySQL (Región Europa)
+  # ============================================
+  mysql-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    command: --log-bin-trust-function-creators=1
+    environment:
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init-db/mysql:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    networks:
+      - globalshop-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "symmetricds", "-psymmetricds"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # SymmetricDS Nodo América (PostgreSQL)
+  # ============================================
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-america
+    environment:
+      - SYMMETRIC_HOME=/opt/symmetric-ds
+    ports:
+      - "31415:31415"
+    volumes:
+      # Montar el archivo properties directamente
+      - ./symmetricds/america/symmetric.properties:/opt/symmetric-ds/engines/america.properties
+      # Montar el archivo SQL de configuración
+      - ./symmetricds/america/engines/america.sql:/opt/symmetric-ds/engines/america-000.sql
+    depends_on:
+      postgres-america:
+        condition: service_healthy
+    networks:
+      - globalshop-network
+    restart: unless-stopped
+
+  # ============================================
+  # Inicializador de Configuración SymmetricDS
+  # ============================================
+  symmetricds-config:
+    image: postgres:15
+    container_name: symmetricds-config
+    volumes:
+      - ./symmetricds/america/engines/america.sql:/config/america.sql
+    command: >
+      bash -c "
+        echo 'Esperando a que SymmetricDS cree sus tablas...';
+        sleep 45;
+        echo 'Verificando si la configuración ya existe...';
+        TRIGGER_COUNT=$$(PGPASSWORD=symmetricds psql -h postgres-america -U symmetricds -d globalshop -t -c \"SELECT COUNT(*) FROM sym_trigger WHERE trigger_id LIKE '%_trigger';\" 2>/dev/null | tr -d ' ' || echo '0');
+        if [ \"$$TRIGGER_COUNT\" = \"0\" ]; then
+          echo 'Ejecutando SQL de configuración...';
+          PGPASSWORD=symmetricds psql -h postgres-america -U symmetricds -d globalshop -f /config/america.sql 2>&1;
+          echo 'Configuración completada!';
+        else
+          echo 'Configuración ya existe. Omitiendo...';
+        fi
+      "
+    depends_on:
+      symmetricds-america:
+        condition: service_started
+    networks:
+      - globalshop-network
+    restart: "no"
+
+  # ============================================
+  # SymmetricDS Nodo Europa (MySQL)
+  # ============================================
+  symmetricds-europe:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-europe
+    environment:
+      - SYMMETRIC_HOME=/opt/symmetric-ds
+    ports:
+      - "31416:31416"
+    volumes:
+      # Montar el archivo properties directamente
+      - ./symmetricds/europe/symmetric.properties:/opt/symmetric-ds/engines/europe.properties
+      # Montar el archivo SQL de configuración (vacío o con comentarios)
+      - ./symmetricds/europe/engines/europe.sql:/opt/symmetric-ds/engines/europe-000.sql
+    depends_on:
+      mysql-europe:
+        condition: service_healthy
+      symmetricds-america:
+        condition: service_started
+    networks:
+      - globalshop-network
+    restart: unless-stopped
+
+# ============================================
+# Red Compartida
+# ============================================
+networks:
+  globalshop-network:
+    driver: bridge
+
+# ============================================
+# Volúmenes para Persistencia de Datos
+# ============================================
+volumes:
+  postgres-data:
+    driver: local
+  mysql-data:
+    driver: local

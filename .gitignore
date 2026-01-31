@@ -2,8 +2,6 @@
 # .gitignore - Archivos a ignorar en Git
 # ============================================
 
-# Docker Compose file (los estudiantes deben crearlo)
-docker-compose.yml
 
 # ============================================
 # ARCHIVOS SOLO PARA PROFESOR (NO SUBIR A MAIN)
