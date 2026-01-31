@@ -3,13 +3,14 @@
 # ============================================
 
 # Docker Compose file (los estudiantes deben crearlo)
-docker-compose.yml
+# docker-compose.yml
 
 # ============================================
 # ARCHIVOS SOLO PARA PROFESOR (NO SUBIR A MAIN)
 # ============================================
 calificar_todos.sh
 calificar.sh
+test.bat
 calificar_estudiante.sh
 INSTRUCCIONES_PROFESOR.md
 RESUMEN_*.md
@@ -23,7 +24,7 @@ resultados*/
 calificacion_*.txt
 calificaciones.json
 calificaciones.csv
-
+calificar_todos.bat
 # ============================================
 # ARCHIVOS TEMPORALES Y SISTEMA
 # ============================================
