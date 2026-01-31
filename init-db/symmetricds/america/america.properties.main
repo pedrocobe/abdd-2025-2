@@ -2,56 +2,32 @@
 # SymmetricDS Node Configuration - AMÉRICA
 # ============================================
 # 
-# INSTRUCCIONES PARA EL ESTUDIANTE:
-# Este archivo debe ser configurado para conectar el nodo América
-# con la base de datos PostgreSQL y establecer la replicación bidireccional
-# con el nodo Europa.
-#
-# TAREAS:
-# 1. Configurar la conexión a PostgreSQL (db.*)
-# 2. Definir el group.id y external.id del nodo
-# 3. Configurar el modo de registro (registration.url)
-# 4. Habilitar servicios necesarios
-#
-# ============================================
-
 # --------------------------------------------
 # Identificación del Nodo
 # --------------------------------------------
-# COMPLETAR: Define el grupo de este nodo (ej: america-store, region-america)
-engine.name=
-group.id=
-external.id=
+engine.name=america
+group.id=america-store
+external.id=001
 
 # --------------------------------------------
 # Conexión a la Base de Datos PostgreSQL
 # --------------------------------------------
-# COMPLETAR: Configuración de conexión a PostgreSQL
-# Host: postgres-america (nombre del servicio en docker-compose)
-# Puerto: 5432
-# Base de datos: globalshop
-# Usuario: symmetricds
-# Password: symmetricds
-
-db.driver=
-db.url=
-db.user=
-db.password=
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://postgres-america:5432/globalshop
+db.user=symmetricds
+db.password=symmetricds
 
 # --------------------------------------------
 # Modo de Registro
 # --------------------------------------------
-# COMPLETAR: URL de registro
-# Este nodo actuará como nodo RAÍZ (root/master)
-# registration.url debe estar vacío o apuntar a sí mismo
-
+# Este nodo es el RAÍZ, no necesita registration.url
 registration.url=
 
 # --------------------------------------------
 # Configuración de Sincronización
 # --------------------------------------------
-# Modo de sincronización inicial
-sync.url=
+# URL de sincronización (este nodo)
+sync.url=http://symmetricds-america:31415/sync/america
 
 # Intervalo de push/pull (en milisegundos)
 # Controla con qué frecuencia se envían/reciben cambios
@@ -76,10 +52,8 @@ auto.upgrade=true
 # --------------------------------------------
 # Configuración HTTP/REST API
 # --------------------------------------------
-# Puerto para el servicio HTTP de SymmetricDS
-# COMPLETAR: Puerto (ej: 31415)
 http.enable=true
-http.port=
+http.port=31415
 
 # Tiempo de espera
 http.timeout.ms=90000
@@ -111,12 +85,4 @@ transport.max.bytes.to.sync=1048576
 # Timeout de conexión
 transport.timeout.ms=300000
 
-# ============================================
-# NOTAS IMPORTANTES:
-# 
-# 1. Este nodo (América) debe ser configurado primero
-# 2. El nodo Europa se registrará contra este nodo
-# 3. No olvides completar TODOS los campos marcados con COMPLETAR
-# 4. Los valores deben coincidir con tu docker-compose.yml
-# 
-# ============================================
+
