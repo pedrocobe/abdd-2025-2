@@ -1,0 +1,67 @@
+
+
+services:
+  db-america:
+    image: postgres:15
+    container_name: postgres-america
+    environment:
+      POSTGRES_DB: globalshop
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata-america:/var/lib/postgresql/data
+    networks:
+      - symmetric-net
+
+  db-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    command: --log_bin_trust_function_creators=1
+    environment:
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata-europe:/var/lib/mysql
+    networks:
+      - symmetric-net
+
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.15
+    container_name: symmetricds-america
+    volumes:
+      - ./symmetricds/america/engines:/opt/symmetric-ds/engines
+    ports:
+      - "31415:31415"
+    environment:
+      SYM_HTTP_PORT: 31415
+    depends_on:
+      - db-america
+    networks:
+      - symmetric-net
+
+  symmetricds-europe:
+    image: jumpmind/symmetricds:latest
+    container_name: symmetricds-europe
+    volumes:
+      - ./symmetricds/europe/engines:/opt/symmetric-ds/engines
+    ports:
+      - "31416:31416"
+    environment:
+      - SYM_HTTP_PORT=31416
+    depends_on:
+      - db-europe
+    networks:
+      - symmetric-net
+
+volumes:
+  pgdata-america:
+  mysqldata-europe:
+
+networks:
+  symmetric-net:
