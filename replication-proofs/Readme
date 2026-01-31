@@ -1,0 +1,30 @@
+# Evidencias de Replicación Bidireccional
+
+## Estudiante
+- **Nombre:** [Eduardo Jesús Anchundia Lucas]
+- **Cédula:** [1314892066]
+- **Fecha:** [29/01/2026]
+
+## Descripción de Capturas
+
+### 00_arquitectura.png
+Muestra los 4 contenedores corriendo correctamente.
+
+### 01_insert_pg_mysql.png
+Inserción en PostgreSQL replicada a MySQL.
+- Producto ID: EVIDENCIA-01
+- Tiempo de replicación: ~10 segundos
+
+### 02_insert_mysql_pg.png
+Inserción en MySQL replicada a PostgreSQL.
+- Cliente ID: EVIDENCIA-02  
+- Tiempo de replicación: ~10 segundos
+
+### 03_update.png
+Actualización bidireccional funcionando.
+
+### 04_delete.png
+Eliminación bidireccional funcionando.
+
+## Conclusión
+La replicación bidireccional está funcionando correctamente en ambas direcciones.
