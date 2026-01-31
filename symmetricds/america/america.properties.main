@@ -1,0 +1,32 @@
+# Identificación del Nodo
+# --------------------------------------------
+engine.name=america
+group.id=america-store
+external.id=001
+
+# --------------------------------------------
+# Conexión a la Base de Datos PostgreSQL
+# Usuario: symmetricds
+# Password: symmetricds
+
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://postgres-america:5432/globalshop
+db.user=symmetricds
+db.password=symmetricds
+
+# --------------------------------------------
+# Modo de Registro
+# Configuración de Sincronización
+# --------------------------------------------
+# URL de registro (requerida para inicializarse)
+registration.url=http://symmetricds-america:31415/sync/america
+
+# URL de sincronización
+sync.url=http://symmetricds-america:31415/sync/america
+
+# Puerto para el servicio HTTP de SymmetricDS
+http.enable=true
+http.port=31415
+
+# Tiempo de espera
+http.timeout.ms=90000
