@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL (América)
+  postgres-america:
+    image: postgres:15
+    container_name: postgres-america
+    environment:
+      POSTGRES_DB: globalshop
+      POSTGRES_USER: symmetricds
+      POSTGRES_PASSWORD: symmetricds
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db/postgres:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - globalshop-network
+
+  # Base de datos MySQL (Europa)
+  mysql-europe:
+    image: mysql:8.0
+    container_name: mysql-europe
+    environment:
+      MYSQL_DATABASE: globalshop
+      MYSQL_USER: symmetricds
+      MYSQL_PASSWORD: symmetricds
+      MYSQL_ROOT_PASSWORD: rootpassword
+    command: --log-bin-trust-function-creators=1
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init-db/mysql:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    networks:
+      - globalshop-network
+
+ # SymmetricDS Nodo América
+  symmetricds-america:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-america
+    environment:
+      - SYMMETRIC_HOME=/opt/symmetric-ds
+    ports:
+      - "31415:31415"
+    volumes:
+      - ./symmetricds/america/engines/symmetric.properties:/opt/symmetric-ds/engines/america.properties
+      - ./symmetricds/america/engines/america.properties:/opt/symmetric-ds/engines/america.properties.sql
+    depends_on:
+      - postgres-america
+    networks:
+      - globalshop-network
+
+  # SymmetricDS Nodo Europa
+  symmetricds-europe:
+    image: jumpmind/symmetricds:3.16
+    container_name: symmetricds-europe
+    environment:
+      - SYMMETRIC_HOME=/opt/symmetric-ds
+    ports:
+      - "31416:31416"
+    volumes:
+      - ./symmetricds/europe/engines/symmetric.properties:/opt/symmetric-ds/engines/europe.properties
+      - ./symmetricds/america/engines/america.properties:/opt/symmetric-ds/engines/europe.properties.sql
+    depends_on:
+      - mysql-europe
+      - symmetricds-america
+    networks:
+      - globalshop-network
+
+networks:
+  globalshop-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  mysql-data:
